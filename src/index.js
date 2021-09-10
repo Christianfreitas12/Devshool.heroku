@@ -1,5 +1,5 @@
 
-import db from 'db.js'
+import db from './db.js'
 import express from 'express'
 import cors from 'cors'
 
@@ -8,50 +8,63 @@ app.use(cors());
 app.use(express.json());
 
 
-app.get('/matricula', async (req, resp)=> {
+app.get('/matricula', async (req, resp) => {
     try{ 
-        let r = await.db.tb_Matricula.findAll();
-        resp.send(r);
-    }catch(e){
-      resp.send({erro: "Ocorreu um Erro"})
+        let r = await db.tb_matricula.findAll ({ order: [[ 'id_matricula', 'desc' ]] });
+        resp.send(r); 
+    }catch(e) {
+      resp.send({erro: e.toString()})
     }
 })
 
 
 app.post('/matricula', async (req, resp)=> {
     try{
-        let nomeAluno = req.body.nm_aluno
-        let chamada = req.body.nr_chamada
-        let turma = req.body.nr_turma
-        let curso = req.body.nm_curso
+        let {nome, chamada, curso, turma } = req.body;
 
-        let cadastra ={
-        nm_aluno: nomeAluno,
-        nr_chamada: chamada,
-        nr_turma: turma,
-        nm_curso: curso   
-        }
-
-        let Alujacadas = await db.tb_Matricula.findOne({
-            where:{nm_aluno: nomeAluno,
-                   nr_chamada: chamada}
+        let r = await db.tb_matricula.create({
+            nm_aluno: nome,
+            nr_chamda: chamada,
+            nm_curso: curso,
+            nm_turma: turma
         })
-
-        if(Alujacadas != null)
-        retrun resp.send("aluno já cadastrado")
-
-        let r = await db.tb_Matricula.create(cadastra)
-        resp.send(r)
-
+        resp.send(r);
     }catch(e){
-        resp.send(e)
+        resp.send({erro: e.toString()})
     }
 })
 
 app.put('/matricula/:id', async(req, resp)=>{
+    try{
+        let {nome, chamada, curso, turma } = req.body;
+        let { id } = req.params;
 
+        let r = await db.tb_matricula.update(
+            {
+                nm_aluno: nome,
+                nr_chamada: chamada,
+                nm_curso: curso,
+                nm_turma: turma
+            },
+            {
+               where: {id_matricula: id}
+            }
+        )
+        resp.sendStatus(200)
+    }catch (e) {
+        resp.send({erro: e.toString()})
+    }
 })
 
 app.delete('/matricula/:id', async(req, resp)=>{
-    
+    try{
+        let { id } = req.params;
+
+        let r = await db.tb_matricula.destroy({ where: {id_matricula: id } })
+        resp.sendStatus(200)
+    }catch (e){
+        resp.send({erro: e.toString()})
+    }
 })
+
+app.listen(process.env.PORT, x => console.log(`Server up at port ${process.env.PORT}`))
