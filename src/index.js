@@ -24,7 +24,7 @@ app.post('/matricula', async (req, resp)=> {
 
         let r = await db.tb_matricula.create({
             nm_aluno: nome,
-            nr_chamda: chamada,
+            nr_chamada: chamada,
             nm_curso: curso,
             nm_turma: turma
         })
