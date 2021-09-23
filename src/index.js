@@ -56,7 +56,7 @@ app.put('/matricula/:id', async(req, resp)=>{
                 nm_turma: turma
             },
             {
-               where: {id_matricula: id}
+               where: {id_mtricula: id}
             }
         )
         resp.sendStatus(200)
